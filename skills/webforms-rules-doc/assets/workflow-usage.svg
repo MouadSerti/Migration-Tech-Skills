@@ -1,0 +1,23 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1600" height="900" viewBox="0 0 1600 900">
+  <rect width="1600" height="900" fill="white"/>
+  <text x="60" y="75" font-family="Arial, sans-serif" font-size="44" font-weight="700" fill="#1f2937">Skill Claude Code : webforms-rules-doc</text>
+  <text x="60" y="115" font-family="Arial, sans-serif" font-size="24" fill="#4b5563">De fichiers WebForms IIS vers règles validées et exigences API</text>
+  <defs><marker id="arrow" markerWidth="12" markerHeight="12" refX="10" refY="6" orient="auto"><path d="M0,0 L12,6 L0,12 z" fill="#697386"/></marker></defs>
+  <style>.box{rx:22;stroke-width:4}.t{font:700 26px Arial}.p{font:22px Arial;fill:#1f2937}.s{font:18px Arial;fill:#1f2937}.arrow{stroke:#697386;stroke-width:6;marker-end:url(#arrow);fill:none}</style>
+  <rect x="70" y="185" width="320" height="175" class="box" fill="#d8ecff" stroke="#2c6fad"/>
+  <text x="140" y="230" class="t" fill="#2c6fad">1. Snapshot IIS</text><text x="125" y="280" class="p">Copier le module legacy</text><text x="155" y="310" class="p">en lecture seule</text>
+  <rect x="470" y="185" width="320" height="175" class="box" fill="#ddf5e4" stroke="#2f8a4b"/>
+  <text x="535" y="230" class="t" fill="#2f8a4b">2. Lancer le skill</text><text x="540" y="280" class="p">/webforms-rules-doc</text><text x="550" y="310" class="p">./ModuleFacturation</text>
+  <rect x="870" y="185" width="320" height="175" class="box" fill="#fff0d8" stroke="#b96b00"/>
+  <text x="935" y="230" class="t" fill="#b96b00">3. Analyse statique</text><text x="955" y="280" class="p">Contrôles, événements,</text><text x="965" y="310" class="p">SQL, sessions, config</text>
+  <rect x="1260" y="185" width="280" height="175" class="box" fill="#eadfff" stroke="#6f4eb2"/>
+  <text x="1320" y="230" class="t" fill="#6f4eb2">4. Preuves code</text><text x="1335" y="280" class="p">evidence-map.md</text><text x="1340" y="310" class="p">fichier + ligne</text>
+  <rect x="220" y="505" width="400" height="210" class="box" fill="#ddf5e4" stroke="#2f8a4b"/>
+  <text x="290" y="555" class="t" fill="#2f8a4b">5A. Support &amp; Changement</text><text x="320" y="610" class="p">support-validation.md</text><text x="315" y="645" class="p">Valider / corriger</text><text x="330" y="680" class="p">les règles métier</text>
+  <rect x="980" y="505" width="400" height="210" class="box" fill="#d8ecff" stroke="#2c6fad"/>
+  <text x="1070" y="555" class="t" fill="#2c6fad">5B. Backend API</text><text x="1085" y="610" class="p">backend-api-rules.md</text><text x="1060" y="645" class="p">Implémenter validations,</text><text x="1060" y="680" class="p">workflows, calculs, erreurs</text>
+  <path d="M390 272 L470 272" class="arrow"/><path d="M790 272 L870 272" class="arrow"/><path d="M1190 272 L1260 272" class="arrow"/><path d="M1400 360 L1400 440" class="arrow"/><path d="M1400 440 L420 440" stroke="#697386" stroke-width="6" fill="none"/><path d="M1400 440 L1180 440" stroke="#697386" stroke-width="6" fill="none"/><path d="M420 440 L420 505" class="arrow"/><path d="M1180 440 L1180 505" class="arrow"/>
+  <rect x="70" y="775" width="1470" height="70" rx="18" fill="#ffe3e3" stroke="#b42318" stroke-width="3"/>
+  <text x="95" y="807" class="s">Règle de sécurité : ne jamais modifier le code legacy et ne jamais exécuter l’application. Utiliser une copie/snapshot du dossier IIS.</text>
+  <text x="95" y="833" class="s">Les règles “A confirmer” doivent être validées par Support &amp; Changement avant implémentation backend.</text>
+</svg>

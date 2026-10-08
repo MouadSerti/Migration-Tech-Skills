@@ -1,0 +1,166 @@
+import { Injectable, inject } from '@angular/core';
+import { HttpClient } from '@angular/common/http';
+import { catchError, forkJoin, map, Observable, of } from 'rxjs';
+import { UserContextService } from 'src/app/@theme/services/user-context.service';
+import { ColumnConfig, DropdownOption, DropdownParams, StandardDropdownApi } from '../types';
+
+export const TITLE_API = [{
+  title: 'gestion des __MODULE_LABEL__'
+}];
+
+export const COLUMNS_API: ColumnConfig[] = [
+  // Generated from Swagger/OpenAPI.
+  // Example:
+  // {
+  //   field: 'id',
+  //   label: 'ID',
+  //   type: 'number',
+  //   filterable: true,
+  //   validators: { required: true, min: 1 },
+  //   statistics: ['count|groupby|statut'],
+  //   defaultStatistics: []
+  // }
+];
+
+export const ACTIONS_API = [
+  {
+    category: 'Profil __MODULE_LABEL__',
+    items: [
+      // Generated detail/update actions.
+    ]
+  },
+  {
+    category: 'Administration',
+    items: [
+      // Generated add/delete actions.
+    ]
+  }
+];
+
+@Injectable({
+  providedIn: 'root'
+})
+export class ConfigService {
+  private srv = inject(UserContextService);
+  private http = inject(HttpClient);
+
+  private readonly baseUrl = 'https://your-api-server.com/api/v1';
+  private readonly standardApiUrl = `${this.baseUrl}/reference-data`;
+
+  getContextUserId(): number | string {
+    const user: any = this.srv.currentUser();
+
+    return (
+      user?.context_user_id ||
+      user?.id_context_user ||
+      user?.id_user ||
+      ''
+    );
+  }
+
+  getDataApi(): string {
+    // Replace with the listing endpoint extracted from Swagger.
+    // Use contextual values from UserContextService when required.
+    return `${this.baseUrl}/__LISTING_ENDPOINT__`;
+  }
+
+  getDropdownList(
+    api: StandardDropdownApi,
+    params: DropdownParams = {}
+  ): Observable<DropdownOption[]> {
+    const url = this.buildDropdownUrl(api, this.resolveDropdownParams(params));
+
+    return this.http.get<any>(url).pipe(
+      map((response) => this.extractArrayFromResponse(response).map((item: any) => this.mapToDropdownOption(item))),
+      catchError(() => of([]))
+    );
+  }
+
+  loadDropdownsForColumns(columns: ColumnConfig[]): Observable<ColumnConfig[]> {
+    if (!columns || columns.length === 0) {
+      return of([]);
+    }
+
+    const requests = columns.map((column) => {
+      if (column.type !== 'select') {
+        return of(column);
+      }
+
+      if (Array.isArray(column['options']) && column['options'].length > 0) {
+        return of(column);
+      }
+
+      if (!column['dropdown']?.api) {
+        return of({ ...column, options: [] });
+      }
+
+      return this.getDropdownList(column['dropdown'].api, column['dropdown'].params).pipe(
+        map((options) => ({ ...column, options })),
+        catchError(() => of({ ...column, options: [] }))
+      );
+    });
+
+    return forkJoin(requests);
+  }
+
+  private buildDropdownUrl(api: StandardDropdownApi, params: DropdownParams): string {
+    // Example dropdown routing — replace these cases with the reference
+    // endpoints exposed by your own API (categories, regions, statuses, ...).
+    switch (api) {
+      case 'category':
+        return `${this.standardApiUrl}/categories`;
+      case 'parentGroup':
+        this.required(params.context_user_id, 'context_user_id');
+        return `${this.standardApiUrl}/parent-groups/${this.encode(params.context_user_id!)}`;
+      case 'subGroup':
+        this.required(params.parent_group_id, 'parent_group_id');
+        this.required(params.context_user_id, 'context_user_id');
+        return `${this.standardApiUrl}/sub-groups/${this.encode(params.parent_group_id!)}/${this.encode(params.context_user_id!)}`;
+      case 'status':
+        return `${this.standardApiUrl}/statuses`;
+      default:
+        throw new Error(`Unknown dropdown API: ${api}`);
+    }
+  }
+
+  private resolveDropdownParams(params?: DropdownParams): DropdownParams {
+    const contextUserId = this.getContextUserId();
+    return {
+      ...params,
+      context_user_id: params?.context_user_id || contextUserId
+    };
+  }
+
+  private extractArrayFromResponse(response: any): any[] {
+    if (Array.isArray(response)) return response;
+    if (!response) return [];
+
+    for (const key of ['data', 'items', 'list', 'results']) {
+      if (Array.isArray(response[key])) return response[key];
+    }
+
+    const firstArray = Object.values(response).find((value) => Array.isArray(value));
+    return Array.isArray(firstArray) ? firstArray : [];
+  }
+
+  private mapToDropdownOption(item: any): DropdownOption {
+    const value =
+      item.id ?? item.Id ?? item.value ?? item.code;
+
+    const label =
+      item.label ?? item.libelle ?? item.name ??
+      item.description ?? String(value ?? '');
+
+    return { value: value ?? label, label, raw: item };
+  }
+
+  private required(value: any, fieldName: string): void {
+    if (value === null || value === undefined || value === '') {
+      throw new Error(`Parameter "${fieldName}" is required.`);
+    }
+  }
+
+  private encode(value: string | number): string {
+    return encodeURIComponent(String(value));
+  }
+}
